@@ -447,6 +447,8 @@
       const resultLossEl = document.getElementById("resultLoss");
       const calcLossBtn = document.getElementById("calcLossBtn");
       const storageKeyGn = "flashCalcGn100";
+      const storageKeyUnit = "flashCalcUnit";
+      const storageKeyIso = "flashCalcIso";
 
       function nearestFullStop(value) {
         let best = fullStops[0];
@@ -529,6 +531,36 @@
           return;
         }
         localStorage.setItem(storageKeyGn, value.toString());
+      }
+
+      function syncBasicToLoss() {
+        gnLossEl.value = gnEl.value;
+        unitLossEl.value = unitEl.value;
+        isoLossEl.value = isoEl.value;
+        powerLossEl.value = powerEl.value;
+        modeLossEl.value = modeEl.value;
+        distanceLossPresetEl.value = distancePresetEl.value;
+        distanceLossEl.value = distanceEl.value;
+        apertureLossEl.value = apertureEl.value;
+        setLossModeUI();
+        updateDistanceInputVisibility(distanceLossPresetEl, distanceLossEl);
+      }
+
+      function loadSavedBasicSettings() {
+        loadSavedGuideNumber();
+        const savedUnit = localStorage.getItem(storageKeyUnit);
+        const savedIso = localStorage.getItem(storageKeyIso);
+        if (savedUnit === "m" || savedUnit === "ft") {
+          unitEl.value = savedUnit;
+        }
+        if (savedIso && Array.from(isoEl.options).some((opt) => opt.value === savedIso)) {
+          isoEl.value = savedIso;
+        }
+      }
+
+      function saveBasicSettings() {
+        localStorage.setItem(storageKeyUnit, unitEl.value);
+        localStorage.setItem(storageKeyIso, isoEl.value);
       }
 
       function calculate() {
@@ -641,16 +673,30 @@
       gnEl.addEventListener("change", () => {
         syncGuideNumber(gnEl);
         saveGuideNumber(gnEl);
+        syncBasicToLoss();
+      });
+      unitEl.addEventListener("change", () => {
+        saveBasicSettings();
+        syncBasicToLoss();
+      });
+      isoEl.addEventListener("change", () => {
+        saveBasicSettings();
+        syncBasicToLoss();
+      });
+      powerEl.addEventListener("change", syncBasicToLoss);
+      modeEl.addEventListener("change", syncBasicToLoss);
+      distancePresetEl.addEventListener("change", syncBasicToLoss);
+      distanceEl.addEventListener("change", syncBasicToLoss);
+      apertureEl.addEventListener("change", syncBasicToLoss);
+      gnLossEl.addEventListener("change", () => {
+        syncGuideNumber(gnLossEl);
+        saveGuideNumber(gnLossEl);
       });
       distancePresetEl.addEventListener("change", () =>
         updateDistanceInputVisibility(distancePresetEl, distanceEl)
       );
       modeLossEl.addEventListener("change", setLossModeUI);
       calcLossBtn.addEventListener("click", calculateWithLoss);
-      gnLossEl.addEventListener("change", () => {
-        syncGuideNumber(gnLossEl);
-        saveGuideNumber(gnLossEl);
-      });
       modifierPresetEl.addEventListener("change", () => {
         if (modifierPresetEl.value !== "") {
           lossStopsEl.value = modifierPresetEl.value;
@@ -663,9 +709,11 @@
       tabLoss.addEventListener("click", () => setScreen("loss"));
       setModeUI();
       setLossModeUI();
-      loadSavedGuideNumber();
+      loadSavedBasicSettings();
+      saveBasicSettings();
       updateDistanceInputVisibility(distancePresetEl, distanceEl);
       updateDistanceInputVisibility(distanceLossPresetEl, distanceLossEl);
+      syncBasicToLoss();
       setScreen("basic");
     </script>
   </body>
