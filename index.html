@@ -195,28 +195,56 @@
             <div class="two">
               <div class="row">
                 <label for="iso">ISO</label>
-                <input id="iso" type="number" min="50" step="50" value="100" />
+                <select id="iso">
+                  <option value="50">50</option>
+                  <option value="100" selected>100</option>
+                  <option value="125">125</option>
+                  <option value="160">160</option>
+                  <option value="200">200</option>
+                  <option value="400">400</option>
+                  <option value="800">800</option>
+                </select>
               </div>
 
               <div class="row">
                 <label for="power">Power</label>
                 <select id="power">
-                  <option value="1">1/1</option>
-                  <option value="0.5">1/2</option>
-                  <option value="0.25">1/4</option>
-                  <option value="0.125">1/8</option>
-                  <option value="0.0625">1/16</option>
-                  <option value="0.03125">1/32</option>
-                  <option value="0.015625">1/64</option>
-                  <option value="0.0078125">1/128</option>
+                  <option value="1">Full power</option>
+                  <option value="0.5">Half power</option>
+                  <option value="0.25">Quarter power</option>
+                  <option value="0.125">Eighth power</option>
                 </select>
               </div>
             </div>
 
             <div class="two">
               <div class="row" id="distanceRow">
-                <label for="distance">Distance</label>
-                <input id="distance" type="number" min="0.1" step="0.1" value="3" />
+                <label for="distancePreset">Distance</label>
+                <select id="distancePreset">
+                  <option value="1">1</option>
+                  <option value="1.5">1.5</option>
+                  <option value="2">2</option>
+                  <option value="2.5">2.5</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="7">7</option>
+                  <option value="10">10</option>
+                  <option value="12">12</option>
+                  <option value="15">15</option>
+                  <option value="20">20</option>
+                  <option value="25">25</option>
+                  <option value="custom">Custom</option>
+                </select>
+                <input
+                  id="distance"
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  value="3"
+                  style="display: none; margin-top: 6px"
+                  placeholder="Custom distance"
+                />
               </div>
 
               <div class="row" id="apertureRow" style="display: none">
@@ -267,20 +295,24 @@
             <div class="two">
               <div class="row">
                 <label for="isoLoss">ISO</label>
-                <input id="isoLoss" type="number" min="50" step="50" value="100" />
+                <select id="isoLoss">
+                  <option value="50">50</option>
+                  <option value="100" selected>100</option>
+                  <option value="125">125</option>
+                  <option value="160">160</option>
+                  <option value="200">200</option>
+                  <option value="400">400</option>
+                  <option value="800">800</option>
+                </select>
               </div>
 
               <div class="row">
                 <label for="powerLoss">Power</label>
                 <select id="powerLoss">
-                  <option value="1">1/1</option>
-                  <option value="0.5">1/2</option>
-                  <option value="0.25">1/4</option>
-                  <option value="0.125">1/8</option>
-                  <option value="0.0625">1/16</option>
-                  <option value="0.03125">1/32</option>
-                  <option value="0.015625">1/64</option>
-                  <option value="0.0078125">1/128</option>
+                  <option value="1">Full power</option>
+                  <option value="0.5">Half power</option>
+                  <option value="0.25">Quarter power</option>
+                  <option value="0.125">Eighth power</option>
                 </select>
               </div>
             </div>
@@ -300,8 +332,32 @@
 
             <div class="two">
               <div class="row" id="distanceLossRow">
-                <label for="distanceLoss">Distance</label>
-                <input id="distanceLoss" type="number" min="0.1" step="0.1" value="3" />
+                <label for="distanceLossPreset">Distance</label>
+                <select id="distanceLossPreset">
+                  <option value="1">1</option>
+                  <option value="1.5">1.5</option>
+                  <option value="2">2</option>
+                  <option value="2.5">2.5</option>
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="7">7</option>
+                  <option value="10">10</option>
+                  <option value="12">12</option>
+                  <option value="15">15</option>
+                  <option value="20">20</option>
+                  <option value="25">25</option>
+                  <option value="custom">Custom</option>
+                </select>
+                <input
+                  id="distanceLoss"
+                  type="number"
+                  min="0.1"
+                  step="0.1"
+                  value="3"
+                  style="display: none; margin-top: 6px"
+                  placeholder="Custom distance"
+                />
               </div>
 
               <div class="row" id="apertureLossRow" style="display: none">
@@ -334,6 +390,7 @@
       const unitEl = document.getElementById("unit");
       const isoEl = document.getElementById("iso");
       const powerEl = document.getElementById("power");
+      const distancePresetEl = document.getElementById("distancePreset");
       const distanceEl = document.getElementById("distance");
       const apertureEl = document.getElementById("aperture");
       const distanceRow = document.getElementById("distanceRow");
@@ -346,6 +403,7 @@
       const unitLossEl = document.getElementById("unitLoss");
       const isoLossEl = document.getElementById("isoLoss");
       const powerLossEl = document.getElementById("powerLoss");
+      const distanceLossPresetEl = document.getElementById("distanceLossPreset");
       const lossStopsEl = document.getElementById("lossStops");
       const distanceLossEl = document.getElementById("distanceLoss");
       const apertureLossEl = document.getElementById("apertureLoss");
@@ -401,6 +459,17 @@
         return Number.isFinite(n) && n > 0;
       }
 
+      function updateDistanceInputVisibility(presetEl, inputEl) {
+        inputEl.style.display = presetEl.value === "custom" ? "" : "none";
+      }
+
+      function readDistanceValue(presetEl, inputEl) {
+        if (presetEl.value === "custom") {
+          return Number(inputEl.value);
+        }
+        return Number(presetEl.value);
+      }
+
       function calculate() {
         const mode = modeEl.value;
         const gn100 = Number(gnEl.value);
@@ -417,7 +486,7 @@
         const unit = unitEl.value === "m" ? "m" : "ft";
 
         if (mode === "aperture") {
-          const distance = Number(distanceEl.value);
+          const distance = readDistanceValue(distancePresetEl, distanceEl);
           if (!isPositive(distance)) {
             resultEl.innerHTML =
               "<strong>Invalid distance.</strong><div class='muted'>Distance must be a positive number.</div>";
@@ -472,7 +541,7 @@
         const unit = unitLossEl.value === "m" ? "m" : "ft";
 
         if (mode === "aperture") {
-          const distance = Number(distanceLossEl.value);
+          const distance = readDistanceValue(distanceLossPresetEl, distanceLossEl);
           if (!isPositive(distance)) {
             resultLossEl.innerHTML =
               "<strong>Invalid distance.</strong><div class='muted'>Distance must be a positive number.</div>";
@@ -504,12 +573,20 @@
 
       modeEl.addEventListener("change", setModeUI);
       calcBtn.addEventListener("click", calculate);
+      distancePresetEl.addEventListener("change", () =>
+        updateDistanceInputVisibility(distancePresetEl, distanceEl)
+      );
       modeLossEl.addEventListener("change", setLossModeUI);
       calcLossBtn.addEventListener("click", calculateWithLoss);
+      distanceLossPresetEl.addEventListener("change", () =>
+        updateDistanceInputVisibility(distanceLossPresetEl, distanceLossEl)
+      );
       tabBasic.addEventListener("click", () => setScreen("basic"));
       tabLoss.addEventListener("click", () => setScreen("loss"));
       setModeUI();
       setLossModeUI();
+      updateDistanceInputVisibility(distancePresetEl, distanceEl);
+      updateDistanceInputVisibility(distanceLossPresetEl, distanceLossEl);
       setScreen("basic");
     </script>
   </body>
