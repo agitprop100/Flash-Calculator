@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guide Number Flash Calculator</title>
+    <style>
+      :root {
+        --bg1: #f3efe7;
+        --bg2: #dce7ea;
+        --card: #ffffff;
+        --text: #202124;
+        --muted: #5f6368;
+        --accent: #0b6e4f;
+        --accent-2: #084c61;
+        --border: #d7d7d7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at top left, var(--bg1), var(--bg2));
+        min-height: 100vh;
+      }
+
+      .wrap {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 16px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 1.35rem;
+        line-height: 1.2;
+      }
+
+      p.help {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .tab {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px;
+        font-weight: 700;
+        background: #fff;
+        color: var(--text);
+      }
+
+      .tab.active {
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        color: #fff;
+        border-color: transparent;
+      }
+
+      .grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .row {
+        display: grid;
+        gap: 6px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 1rem;
+        background: #fff;
+      }
+
+      button {
+        border: 0;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        cursor: pointer;
+      }
+
+      button:hover {
+        filter: brightness(1.02);
+      }
+
+      .result {
+        margin-top: 14px;
+        border-radius: 12px;
+        background: #f6faf8;
+        border: 1px solid #cae8dc;
+        padding: 12px;
+      }
+
+      .result strong {
+        font-size: 1.15rem;
+      }
+
+      .muted {
+        color: var(--muted);
+        margin-top: 6px;
+        font-size: 0.9rem;
+      }
+
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .screen {
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      @media (max-width: 520px) {
+        .two {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>Guide Number Flash Calculator</h1>
+        <div class="tabs">
+          <button id="tabBasic" class="tab active" type="button">Basic</button>
+          <button id="tabLoss" class="tab" type="button">Bounce/Diffuser</button>
+        </div>
+
+        <div id="screenBasic" class="screen active">
+          <p class="help">
+            Enter your flash guide number (at ISO 100, full power) and either distance
+            or aperture.
+          </p>
+
+          <div class="grid">
+            <div class="row">
+              <label for="mode">Calculate</label>
+              <select id="mode">
+                <option value="aperture">Aperture (f-stop)</option>
+                <option value="distance">Distance</option>
+              </select>
+            </div>
+
+            <div class="two">
+              <div class="row">
+                <label for="gn">Guide Number at ISO 100 (full power)</label>
+                <input id="gn" type="number" min="1" step="0.1" value="36" />
+              </div>
+
+              <div class="row">
+                <label for="unit">Unit</label>
+                <select id="unit">
+                  <option value="m">Meters</option>
+                  <option value="ft">Feet</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="row">
+                <label for="iso">ISO</label>
+                <input id="iso" type="number" min="50" step="50" value="100" />
+              </div>
+
+              <div class="row">
+                <label for="power">Power</label>
+                <select id="power">
+                  <option value="1">1/1</option>
+                  <option value="0.5">1/2</option>
+                  <option value="0.25">1/4</option>
+                  <option value="0.125">1/8</option>
+                  <option value="0.0625">1/16</option>
+                  <option value="0.03125">1/32</option>
+                  <option value="0.015625">1/64</option>
+                  <option value="0.0078125">1/128</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="row" id="distanceRow">
+                <label for="distance">Distance</label>
+                <input id="distance" type="number" min="0.1" step="0.1" value="3" />
+              </div>
+
+              <div class="row" id="apertureRow" style="display: none">
+                <label for="aperture">Aperture (f-number)</label>
+                <input id="aperture" type="number" min="0.7" step="0.1" value="5.6" />
+              </div>
+            </div>
+
+            <button id="calcBtn" type="button">Calculate</button>
+          </div>
+
+          <div class="result" id="result" aria-live="polite">
+            <strong>Ready.</strong>
+            <div class="muted">Set values and tap Calculate.</div>
+          </div>
+        </div>
+
+        <div id="screenLoss" class="screen">
+          <p class="help">
+            Add light-loss compensation for bounce cards, umbrellas, softboxes, or
+            ceiling bounce.
+          </p>
+
+          <div class="grid">
+            <div class="row">
+              <label for="modeLoss">Calculate</label>
+              <select id="modeLoss">
+                <option value="aperture">Aperture (f-stop)</option>
+                <option value="distance">Distance</option>
+              </select>
+            </div>
+
+            <div class="two">
+              <div class="row">
+                <label for="gnLoss">Guide Number at ISO 100 (full power)</label>
+                <input id="gnLoss" type="number" min="1" step="0.1" value="36" />
+              </div>
+
+              <div class="row">
+                <label for="unitLoss">Unit</label>
+                <select id="unitLoss">
+                  <option value="m">Meters</option>
+                  <option value="ft">Feet</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two">
+              <div class="row">
+                <label for="isoLoss">ISO</label>
+                <input id="isoLoss" type="number" min="50" step="50" value="100" />
+              </div>
+
+              <div class="row">
+                <label for="powerLoss">Power</label>
+                <select id="powerLoss">
+                  <option value="1">1/1</option>
+                  <option value="0.5">1/2</option>
+                  <option value="0.25">1/4</option>
+                  <option value="0.125">1/8</option>
+                  <option value="0.0625">1/16</option>
+                  <option value="0.03125">1/32</option>
+                  <option value="0.015625">1/64</option>
+                  <option value="0.0078125">1/128</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <label for="lossStops">Light loss (stops)</label>
+              <select id="lossStops">
+                <option value="0">0 (direct flash)</option>
+                <option value="0.5">0.5 stop</option>
+                <option value="1">1 stop</option>
+                <option value="1.5">1.5 stops</option>
+                <option value="2">2 stops</option>
+                <option value="2.5">2.5 stops</option>
+                <option value="3">3 stops</option>
+              </select>
+            </div>
+
+            <div class="two">
+              <div class="row" id="distanceLossRow">
+                <label for="distanceLoss">Distance</label>
+                <input id="distanceLoss" type="number" min="0.1" step="0.1" value="3" />
+              </div>
+
+              <div class="row" id="apertureLossRow" style="display: none">
+                <label for="apertureLoss">Aperture (f-number)</label>
+                <input id="apertureLoss" type="number" min="0.7" step="0.1" value="5.6" />
+              </div>
+            </div>
+
+            <button id="calcLossBtn" type="button">Calculate With Loss</button>
+          </div>
+
+          <div class="result" id="resultLoss" aria-live="polite">
+            <strong>Ready.</strong>
+            <div class="muted">Choose a loss value and tap Calculate With Loss.</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const fullStops = [1.0, 1.4, 2.0, 2.8, 4.0, 5.6, 8.0, 11, 16, 22, 32];
+
+      const tabBasic = document.getElementById("tabBasic");
+      const tabLoss = document.getElementById("tabLoss");
+      const screenBasic = document.getElementById("screenBasic");
+      const screenLoss = document.getElementById("screenLoss");
+
+      const modeEl = document.getElementById("mode");
+      const gnEl = document.getElementById("gn");
+      const unitEl = document.getElementById("unit");
+      const isoEl = document.getElementById("iso");
+      const powerEl = document.getElementById("power");
+      const distanceEl = document.getElementById("distance");
+      const apertureEl = document.getElementById("aperture");
+      const distanceRow = document.getElementById("distanceRow");
+      const apertureRow = document.getElementById("apertureRow");
+      const resultEl = document.getElementById("result");
+      const calcBtn = document.getElementById("calcBtn");
+
+      const modeLossEl = document.getElementById("modeLoss");
+      const gnLossEl = document.getElementById("gnLoss");
+      const unitLossEl = document.getElementById("unitLoss");
+      const isoLossEl = document.getElementById("isoLoss");
+      const powerLossEl = document.getElementById("powerLoss");
+      const lossStopsEl = document.getElementById("lossStops");
+      const distanceLossEl = document.getElementById("distanceLoss");
+      const apertureLossEl = document.getElementById("apertureLoss");
+      const distanceLossRow = document.getElementById("distanceLossRow");
+      const apertureLossRow = document.getElementById("apertureLossRow");
+      const resultLossEl = document.getElementById("resultLoss");
+      const calcLossBtn = document.getElementById("calcLossBtn");
+
+      function nearestFullStop(value) {
+        let best = fullStops[0];
+        let bestDiff = Math.abs(best - value);
+        for (const stop of fullStops) {
+          const diff = Math.abs(stop - value);
+          if (diff < bestDiff) {
+            best = stop;
+            bestDiff = diff;
+          }
+        }
+        return best;
+      }
+
+      function setModeUI() {
+        const mode = modeEl.value;
+        if (mode === "aperture") {
+          distanceRow.style.display = "";
+          apertureRow.style.display = "none";
+        } else {
+          distanceRow.style.display = "none";
+          apertureRow.style.display = "";
+        }
+      }
+
+      function setLossModeUI() {
+        const mode = modeLossEl.value;
+        if (mode === "aperture") {
+          distanceLossRow.style.display = "";
+          apertureLossRow.style.display = "none";
+        } else {
+          distanceLossRow.style.display = "none";
+          apertureLossRow.style.display = "";
+        }
+      }
+
+      function setScreen(screen) {
+        const showBasic = screen === "basic";
+        screenBasic.classList.toggle("active", showBasic);
+        screenLoss.classList.toggle("active", !showBasic);
+        tabBasic.classList.toggle("active", showBasic);
+        tabLoss.classList.toggle("active", !showBasic);
+      }
+
+      function isPositive(n) {
+        return Number.isFinite(n) && n > 0;
+      }
+
+      function calculate() {
+        const mode = modeEl.value;
+        const gn100 = Number(gnEl.value);
+        const iso = Number(isoEl.value);
+        const powerFraction = Number(powerEl.value);
+
+        if (!isPositive(gn100) || !isPositive(iso) || !isPositive(powerFraction)) {
+          resultEl.innerHTML =
+            "<strong>Invalid input.</strong><div class='muted'>GN, ISO, and power must be positive numbers.</div>";
+          return;
+        }
+
+        const gnEff = gn100 * Math.sqrt(iso / 100) * Math.sqrt(powerFraction);
+        const unit = unitEl.value === "m" ? "m" : "ft";
+
+        if (mode === "aperture") {
+          const distance = Number(distanceEl.value);
+          if (!isPositive(distance)) {
+            resultEl.innerHTML =
+              "<strong>Invalid distance.</strong><div class='muted'>Distance must be a positive number.</div>";
+            return;
+          }
+
+          const fRaw = gnEff / distance;
+          const fRounded = nearestFullStop(fRaw);
+          resultEl.innerHTML = `
+            <strong>Use approximately f/${fRaw.toFixed(1)}</strong>
+            <div class="muted">Nearest full-stop: f/${fRounded.toFixed(1)} (${distance.toFixed(2)} ${unit}, ISO ${iso}, power ${powerEl.options[powerEl.selectedIndex].text})</div>
+          `;
+          return;
+        }
+
+        const aperture = Number(apertureEl.value);
+        if (!isPositive(aperture)) {
+          resultEl.innerHTML =
+            "<strong>Invalid aperture.</strong><div class='muted'>Aperture must be a positive number.</div>";
+          return;
+        }
+
+        const distance = gnEff / aperture;
+        resultEl.innerHTML = `
+          <strong>Place subject at approximately ${distance.toFixed(2)} ${unit}</strong>
+          <div class="muted">For f/${aperture.toFixed(1)}, ISO ${iso}, power ${powerEl.options[powerEl.selectedIndex].text}</div>
+        `;
+      }
+
+      function calculateWithLoss() {
+        const mode = modeLossEl.value;
+        const gn100 = Number(gnLossEl.value);
+        const iso = Number(isoLossEl.value);
+        const powerFraction = Number(powerLossEl.value);
+        const lossStops = Number(lossStopsEl.value);
+
+        if (
+          !isPositive(gn100) ||
+          !isPositive(iso) ||
+          !isPositive(powerFraction) ||
+          !Number.isFinite(lossStops) ||
+          lossStops < 0
+        ) {
+          resultLossEl.innerHTML =
+            "<strong>Invalid input.</strong><div class='muted'>GN, ISO, and power must be positive. Loss must be zero or greater.</div>";
+          return;
+        }
+
+        const directGn = gn100 * Math.sqrt(iso / 100) * Math.sqrt(powerFraction);
+        const lossFactor = Math.pow(2, lossStops / 2);
+        const gnEff = directGn / lossFactor;
+        const unit = unitLossEl.value === "m" ? "m" : "ft";
+
+        if (mode === "aperture") {
+          const distance = Number(distanceLossEl.value);
+          if (!isPositive(distance)) {
+            resultLossEl.innerHTML =
+              "<strong>Invalid distance.</strong><div class='muted'>Distance must be a positive number.</div>";
+            return;
+          }
+
+          const fRaw = gnEff / distance;
+          const fRounded = nearestFullStop(fRaw);
+          resultLossEl.innerHTML = `
+            <strong>Use approximately f/${fRaw.toFixed(1)}</strong>
+            <div class="muted">Nearest full-stop: f/${fRounded.toFixed(1)} (${distance.toFixed(2)} ${unit}, ISO ${iso}, power ${powerLossEl.options[powerLossEl.selectedIndex].text}, loss ${lossStops.toFixed(1)} stop)</div>
+          `;
+          return;
+        }
+
+        const aperture = Number(apertureLossEl.value);
+        if (!isPositive(aperture)) {
+          resultLossEl.innerHTML =
+            "<strong>Invalid aperture.</strong><div class='muted'>Aperture must be a positive number.</div>";
+          return;
+        }
+
+        const distance = gnEff / aperture;
+        resultLossEl.innerHTML = `
+          <strong>Place subject at approximately ${distance.toFixed(2)} ${unit}</strong>
+          <div class="muted">For f/${aperture.toFixed(1)}, ISO ${iso}, power ${powerLossEl.options[powerLossEl.selectedIndex].text}, loss ${lossStops.toFixed(1)} stop</div>
+        `;
+      }
+
+      modeEl.addEventListener("change", setModeUI);
+      calcBtn.addEventListener("click", calculate);
+      modeLossEl.addEventListener("change", setLossModeUI);
+      calcLossBtn.addEventListener("click", calculateWithLoss);
+      tabBasic.addEventListener("click", () => setScreen("basic"));
+      tabLoss.addEventListener("click", () => setScreen("loss"));
+      setModeUI();
+      setLossModeUI();
+      setScreen("basic");
+    </script>
+  </body>
+</html>
