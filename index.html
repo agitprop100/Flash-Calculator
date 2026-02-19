@@ -446,6 +446,7 @@
       const apertureLossRow = document.getElementById("apertureLossRow");
       const resultLossEl = document.getElementById("resultLoss");
       const calcLossBtn = document.getElementById("calcLossBtn");
+      const storageKeyGn = "flashCalcGn100";
 
       function nearestFullStop(value) {
         let best = fullStops[0];
@@ -503,6 +504,31 @@
           return Number(inputEl.value);
         }
         return Number(presetEl.value);
+      }
+
+      function syncGuideNumber(sourceEl) {
+        const value = Number(sourceEl.value);
+        if (!isPositive(value)) {
+          return;
+        }
+        gnEl.value = value.toString();
+        gnLossEl.value = value.toString();
+      }
+
+      function loadSavedGuideNumber() {
+        const saved = Number(localStorage.getItem(storageKeyGn));
+        if (isPositive(saved)) {
+          gnEl.value = saved.toString();
+          gnLossEl.value = saved.toString();
+        }
+      }
+
+      function saveGuideNumber(sourceEl) {
+        const value = Number(sourceEl.value);
+        if (!isPositive(value)) {
+          return;
+        }
+        localStorage.setItem(storageKeyGn, value.toString());
       }
 
       function calculate() {
@@ -612,11 +638,19 @@
 
       modeEl.addEventListener("change", setModeUI);
       calcBtn.addEventListener("click", calculate);
+      gnEl.addEventListener("change", () => {
+        syncGuideNumber(gnEl);
+        saveGuideNumber(gnEl);
+      });
       distancePresetEl.addEventListener("change", () =>
         updateDistanceInputVisibility(distancePresetEl, distanceEl)
       );
       modeLossEl.addEventListener("change", setLossModeUI);
       calcLossBtn.addEventListener("click", calculateWithLoss);
+      gnLossEl.addEventListener("change", () => {
+        syncGuideNumber(gnLossEl);
+        saveGuideNumber(gnLossEl);
+      });
       modifierPresetEl.addEventListener("change", () => {
         if (modifierPresetEl.value !== "") {
           lossStopsEl.value = modifierPresetEl.value;
@@ -629,6 +663,7 @@
       tabLoss.addEventListener("click", () => setScreen("loss"));
       setModeUI();
       setLossModeUI();
+      loadSavedGuideNumber();
       updateDistanceInputVisibility(distancePresetEl, distanceEl);
       updateDistanceInputVisibility(distanceLossPresetEl, distanceLossEl);
       setScreen("basic");
