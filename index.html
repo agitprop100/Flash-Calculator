@@ -331,6 +331,30 @@
             </div>
 
             <div class="two">
+              <div class="row">
+                <label for="modifierPreset">Quick Modifier Preset</label>
+                <select id="modifierPreset">
+                  <option value="">Custom (leave as-is)</option>
+                  <option value="0">Direct flash (0)</option>
+                  <option value="1">Bounce card (1.0)</option>
+                  <option value="1.5">Small softbox (1.5)</option>
+                  <option value="2">Umbrella (2.0)</option>
+                  <option value="1.5">Ceiling bounce low white (1.5)</option>
+                  <option value="2">Ceiling bounce normal (2.0)</option>
+                  <option value="2.5">Ceiling bounce high/dark (2.5)</option>
+                </select>
+              </div>
+
+              <div class="row">
+                <label for="filmPreset">Quick Film Preset</label>
+                <select id="filmPreset">
+                  <option value="0">Slide / no bias (0)</option>
+                  <option value="0.5">Negative film (+0.5 safety)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two">
               <div class="row" id="distanceLossRow">
                 <label for="distanceLossPreset">Distance</label>
                 <select id="distanceLossPreset">
@@ -405,6 +429,8 @@
       const powerLossEl = document.getElementById("powerLoss");
       const distanceLossPresetEl = document.getElementById("distanceLossPreset");
       const lossStopsEl = document.getElementById("lossStops");
+      const modifierPresetEl = document.getElementById("modifierPreset");
+      const filmPresetEl = document.getElementById("filmPreset");
       const distanceLossEl = document.getElementById("distanceLoss");
       const apertureLossEl = document.getElementById("apertureLoss");
       const distanceLossRow = document.getElementById("distanceLossRow");
@@ -522,22 +548,26 @@
         const iso = Number(isoLossEl.value);
         const powerFraction = Number(powerLossEl.value);
         const lossStops = Number(lossStopsEl.value);
+        const filmBiasStops = Number(filmPresetEl.value);
 
         if (
           !isPositive(gn100) ||
           !isPositive(iso) ||
           !isPositive(powerFraction) ||
           !Number.isFinite(lossStops) ||
-          lossStops < 0
+          lossStops < 0 ||
+          !Number.isFinite(filmBiasStops) ||
+          filmBiasStops < 0
         ) {
           resultLossEl.innerHTML =
-            "<strong>Invalid input.</strong><div class='muted'>GN, ISO, and power must be positive. Loss must be zero or greater.</div>";
+            "<strong>Invalid input.</strong><div class='muted'>GN, ISO, and power must be positive. Loss and film bias must be zero or greater.</div>";
           return;
         }
 
         const directGn = gn100 * Math.sqrt(iso / 100) * Math.sqrt(powerFraction);
         const lossFactor = Math.pow(2, lossStops / 2);
-        const gnEff = directGn / lossFactor;
+        const filmBiasFactor = Math.pow(2, filmBiasStops / 2);
+        const gnEff = directGn / lossFactor / filmBiasFactor;
         const unit = unitLossEl.value === "m" ? "m" : "ft";
 
         if (mode === "aperture") {
@@ -552,7 +582,7 @@
           const fRounded = nearestFullStop(fRaw);
           resultLossEl.innerHTML = `
             <strong>Use approximately f/${fRaw.toFixed(1)}</strong>
-            <div class="muted">Nearest full-stop: f/${fRounded.toFixed(1)} (${distance.toFixed(2)} ${unit}, ISO ${iso}, power ${powerLossEl.options[powerLossEl.selectedIndex].text}, loss ${lossStops.toFixed(1)} stop)</div>
+            <div class="muted">Nearest full-stop: f/${fRounded.toFixed(1)} (${distance.toFixed(2)} ${unit}, ISO ${iso}, power ${powerLossEl.options[powerLossEl.selectedIndex].text}, loss ${lossStops.toFixed(1)} stop, film bias +${filmBiasStops.toFixed(1)} stop)</div>
           `;
           return;
         }
@@ -567,7 +597,7 @@
         const distance = gnEff / aperture;
         resultLossEl.innerHTML = `
           <strong>Place subject at approximately ${distance.toFixed(2)} ${unit}</strong>
-          <div class="muted">For f/${aperture.toFixed(1)}, ISO ${iso}, power ${powerLossEl.options[powerLossEl.selectedIndex].text}, loss ${lossStops.toFixed(1)} stop</div>
+          <div class="muted">For f/${aperture.toFixed(1)}, ISO ${iso}, power ${powerLossEl.options[powerLossEl.selectedIndex].text}, loss ${lossStops.toFixed(1)} stop, film bias +${filmBiasStops.toFixed(1)} stop</div>
         `;
       }
 
@@ -578,6 +608,11 @@
       );
       modeLossEl.addEventListener("change", setLossModeUI);
       calcLossBtn.addEventListener("click", calculateWithLoss);
+      modifierPresetEl.addEventListener("change", () => {
+        if (modifierPresetEl.value !== "") {
+          lossStopsEl.value = modifierPresetEl.value;
+        }
+      });
       distanceLossPresetEl.addEventListener("change", () =>
         updateDistanceInputVisibility(distanceLossPresetEl, distanceLossEl)
       );
